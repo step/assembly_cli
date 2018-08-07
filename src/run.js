@@ -2,12 +2,18 @@ const Machine = require('assembly_simulator');
 const fs = require('fs');
 const Table = require('cli-table');
 
-const printPrn = prn => prn.forEach(output=>console.log(output));
+// const printPrn = prn => prn.forEach(output=>console.log(output));
 
 const createTable = () => new Table({
   chars: {'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': ''},
   head:['CL','NL','A','B','C','D','EQ','NE','GT','LT','PRN'],
   colWidths: [5,5,5,5,5,5,5,5,5,5,5]
+})
+
+const createPrnTable = () => new Table({
+  // chars: {'mid': '', 'mid-mid': '', 'right-mid': ''},
+  head:['Output'],
+  colWidths: [65]
 })
 
 const mapRow = ({CL,NL,A,B,C,D,EQ,NE,GT,LT,PRN}) => {
@@ -21,6 +27,11 @@ const printTable = machineTable => {
   console.log(table.toString());
 };
 
+const printOutput = prn => {
+  let table = createPrnTable();
+  table.push([prn.join("\n")]);
+  console.log(table.toString());
+}
 
 const program = fs.readFileSync(process.argv[2],"utf8");
 let m=new Machine();
@@ -28,7 +39,8 @@ try {
   m.load(program);
   m.execute();
   printTable(m.getTable());
-  printPrn(m.getPrn());
+  printOutput(m.getPrn());
 } catch (e) {
-  console.log(e);
+  // console.log(e);
+  console.log("You seem to have an error in your program! Please fix!");
 }
