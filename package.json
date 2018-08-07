@@ -1,0 +1,15 @@
+{
+  "name": "assembly_cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "assembly_simulator": "git+https://github.com/step/assembly_simulator.git",
+    "cli-table": "^0.3.1"
+  }
+}
