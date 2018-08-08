@@ -32,13 +32,18 @@ const printOutput = prn => {
   console.log(table.toString());
 };
 
-const program = fs.readFileSync(process.argv[2], 'utf8');
-let m = new Machine();
 try {
+  const program = fs.readFileSync(process.argv[2], 'utf8');
+  let m = new Machine();
   m.load(program);
   m.execute();
   printTable(m.getTable());
   printOutput(m.getPrn());
 } catch (e) {
-  console.log('You seem to have an error in your program! Please fix!');
+  if(e.name == 'InvalidInstructionException') {
+    console.log(`You seem to have an error in ${process.argv[2]} on line number: ${e.lineNumber}`);
+    console.log(e.instruction);
+  } else {
+    console.log('Something went wrong');
+  }
 }
