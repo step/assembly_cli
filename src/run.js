@@ -5,19 +5,19 @@ const Table = require('cli-table');
 const createTable = () =>
   new Table({
     chars: { mid: '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
-    head: ['CL', 'NL', 'A', 'B', 'C', 'D', 'EQ', 'NE', 'GT', 'LT', 'PRN'],
-    colWidths: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    head: ['CL', 'NL', 'INST', 'A', 'B', 'C', 'D', 'EQ', 'NE', 'GT', 'LT', 'PRN'],
+    colWidths: [5, 5, 14, 5, 5, 5, 5, 5, 5, 5, 5, 5]
   });
 
 const createPrnTable = () =>
   new Table({
     head: ['Output'],
-    colWidths: [65]
+    colWidths: [80]
   });
 
-const mapRow = ({ CL, NL, A, B, C, D, EQ, NE, GT, LT, PRN }) => {
+const mapRow = ({ CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, PRN }) => {
   let prn = PRN ? PRN : ''; // cli-table doesn't handle undefined.
-  return [CL, NL, A, B, C, D, EQ, NE, GT, LT, prn];
+  return [CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, prn];
 };
 
 const printTable = machineTable => {
