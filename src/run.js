@@ -44,6 +44,7 @@ try {
     console.log(`You seem to have an error in ${process.argv[2]} on line number: ${e.lineNumber}`);
     console.log(e.instruction);
   } else {
+    console.log(e);
     console.log('Something went wrong');
   }
 }

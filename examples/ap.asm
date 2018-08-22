@@ -1,5 +1,5 @@
 10 start
-20 mov b,4
+20 mov b,3
 30 mov c,1
 40 mov d,0
 50 add d,c
