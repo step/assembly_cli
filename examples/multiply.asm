@@ -1,4 +1,4 @@
- 10 start
+10 start
 11 jmp 92
 15 func mul
 40 mov c,1
