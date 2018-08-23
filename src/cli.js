@@ -116,9 +116,15 @@ vorpal
 
   vorpal
   .command('show table','shows the machine\'s trace table')
+  .option('-f, --from <line>','the line number from which to print the table')
+  .option('-t, --to <line>','the line upto which to print the table')
   .action(function(args,callback){
+    let fromLine = args.options.from || 0;
+    let sliceOptions = [fromLine];
+    if(args.options.to) sliceOptions.push(args.options.to);
     let table = m.getTable();
-    printTable(table);
+    let slicedTable = Array.prototype.slice.apply(table,sliceOptions);
+    printTable(slicedTable);
     callback();
   });
 
