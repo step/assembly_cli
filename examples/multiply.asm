@@ -16,8 +16,4 @@
 102 mov b,2
 103 call mul
 104 prn d
-105 push a
-106 push a
-107 push a
-108 push a
 110 stop

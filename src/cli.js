@@ -20,8 +20,8 @@ new Table({
 
 const createPrnTable = () =>
   new Table({
-    head: ['Output'],
-    colWidths: [80]
+    head: ['# ', 'Output'],
+    colWidths: [5, 80]
   });
 
 const mapRow = ({ CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, PRN, STK }) => {
@@ -38,13 +38,13 @@ const printTable = machineTable => {
 
 const printOutput = prn => {
   let table = createPrnTable();
-  table.push([prn.join('\n')]);
+  prn.forEach((r,i)=>table.push([i+1,r]));
   vorpal.log(table.toString());
 };
 
 const printStack = stack => {
-  let table = new Table({head:['STACK']});
-  stack.forEach((r)=>table.push([r]));
+  let table = new Table({head:['# ', 'STACK']});
+  stack.reverse().forEach((r,i)=>table.push([i+1,r]));
   vorpal.log(table.toString());
 }
 
