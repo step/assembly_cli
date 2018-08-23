@@ -14,8 +14,8 @@ const printExecutionTable = (state) => {
 const createTable = () =>
 new Table({
     chars: { mid: '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
-    head: ['CL', 'NL', 'INST', 'A', 'B', 'C', 'D', 'EQ', 'NE', 'GT', 'LT', 'PRN'],
-    colWidths: [5, 5, 14, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    head: ['CL', 'NL', 'INST', 'A', 'B', 'C', 'D', 'EQ', 'NE', 'GT', 'LT', 'PRN', 'STK'],
+    colWidths: [5, 5, 14, 5, 5, 5, 5, 5, 5, 5, 5, 5, 15]
   });
 
 const createPrnTable = () =>
@@ -24,9 +24,10 @@ const createPrnTable = () =>
     colWidths: [80]
   });
 
-const mapRow = ({ CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, PRN }) => {
+const mapRow = ({ CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, PRN, STK }) => {
   let prn = PRN ? PRN : ''; // cli-table doesn't handle undefined.
-  return [CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, prn];
+  let stk = STK.slice(-3).join(", ");
+  return [CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, prn, stk];
 };
 
 const printTable = machineTable => {
@@ -127,7 +128,7 @@ vorpal
   });
 
 vorpal
-  .command('stack','shows the machine\'s stack')
+  .command('show stack','shows the machine\'s stack')
   .allowUnknownOptions()
   .action(function(args,callback){
     let stack = m.getStack();
