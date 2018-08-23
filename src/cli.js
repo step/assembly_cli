@@ -3,8 +3,10 @@ const Machine = require('@craftybones/assembly_simulator');
 const fs = require('fs');
 const Table = require('cli-table');
 const chalk = require('chalk');
+const intro = require('./intro.js');
 
 const m = new Machine();
+let program = "";
 
 const printExecutionTable = (state) => {
   let table = [state];
@@ -60,17 +62,18 @@ vorpal
   .allowUnknownOptions()
   .validate(validateFileExists)
   .action(function(args,callback){
-    let program='';
+    let prog='';
     let file=args.file;
     try {
-      program = fs.readFileSync(file,'utf8');
+      prog = fs.readFileSync(file,'utf8');
     } catch (error) {
       this.log(chalk.red(`Unable to read ${file}\n`));
       callback();
       return;
     }
     try {
-      m.load(program);
+      program = prog;
+      m.load(prog);
     } catch (error) {
       let message = `Problems loading ${file}`
       if(error.name == `InvalidInstructionException`) {
@@ -136,4 +139,14 @@ vorpal
     callback();
   });
 
+vorpal
+  .command('show program','shows the program loaded into the machine')
+  .allowUnknownOptions()
+  .action(function(args,callback){
+    vorpal.log(program);
+    callback();
+  });
+
+
+vorpal.log(intro);
 vorpal.delimiter('>>').show();
