@@ -1,54 +1,10 @@
 const vorpal = require('vorpal')();
-const Machine = require('@craftybones/assembly_simulator');
+const MachineActions = require('./machineActions.js');
 const fs = require('fs');
-const Table = require('cli-table');
 const chalk = require('chalk');
 const intro = require('./intro.js');
 
-const m = new Machine();
-let program = "";
-
-const printExecutionTable = (state) => {
-  let table = [state];
-  printTable(table);
-}
-
-const createTable = () =>
-new Table({
-    chars: { mid: '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
-    head: ['CL', 'NL', 'INST', 'A', 'B', 'C', 'D', 'EQ', 'NE', 'GT', 'LT', 'PRN', 'STK'],
-    colWidths: [5, 5, 14, 5, 5, 5, 5, 5, 5, 5, 5, 5, 15]
-  });
-
-const createPrnTable = () =>
-  new Table({
-    head: ['# ', 'Output'],
-    colWidths: [5, 80]
-  });
-
-const mapRow = ({ CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, PRN, STK }) => {
-  let prn = PRN ? PRN : ''; // cli-table doesn't handle undefined.
-  let stk = STK.slice(-3).join(", ");
-  return [CL, NL, INST, A, B, C, D, EQ, NE, GT, LT, prn, stk];
-};
-
-const printTable = machineTable => {
-  let table = createTable();
-  machineTable.forEach(row => table.push(mapRow(row)));
-  vorpal.log(table.toString());
-};
-
-const printOutput = prn => {
-  let table = createPrnTable();
-  prn.forEach((r,i)=>table.push([i+1,r]));
-  vorpal.log(table.toString());
-};
-
-const printStack = stack => {
-  let table = new Table({head:['# ', 'STACK']});
-  stack.reverse().forEach((r,i)=>table.push([i+1,r]));
-  vorpal.log(table.toString());
-}
+const machineActions = new MachineActions(vorpal);
 
 const validateFileExists = (args) => {
   let file = args.file;
@@ -61,97 +17,42 @@ vorpal
   .command('load <file>','loads a program')
   .allowUnknownOptions()
   .validate(validateFileExists)
-  .action(function(args,callback){
-    let prog='';
-    let file=args.file;
-    try {
-      prog = fs.readFileSync(file,'utf8');
-    } catch (error) {
-      this.log(chalk.red(`Unable to read ${file}\n`));
-      callback();
-      return;
-    }
-    try {
-      program = prog;
-      m.load(prog);
-    } catch (error) {
-      let message = `Problems loading ${file}`
-      if(error.name == `InvalidInstructionException`) {
-        message = `Error on line number ${error.lineNumber}\n${error.instruction}`;
-      }
-      this.log(chalk.red(message));
-      callback();
-      return;
-    }
-    this.log(`Loaded ${file}...Ok`);
-    callback();
-  });
+  .action(machineActions.loadProgram.bind(machineActions));
 
 vorpal
   .command('run','runs a program that is loaded')
   .allowUnknownOptions()
-  .action(function(args,callback){
-    m.execute();
-    this.log(`Ok`);
-    callback();
-  });
+  .action(machineActions.run.bind(machineActions));
 
 vorpal
   .command('step','steps into a program that is loaded')
   .allowUnknownOptions()
-  .action(function(args,callback){
-    m.executeStepWise(printExecutionTable);
-    this.log(`Ok`);
-    callback();
-  });
+  .action(machineActions.step.bind(machineActions));
 
 vorpal
   .command('next','steps into a program that is loaded')
   .allowUnknownOptions()
-  .action(function(args,callback){
-    m.nextStep();
-    this.log(`Ok`);
-    callback();
-  });
+  .action(machineActions.next.bind(machineActions));
 
-  vorpal
+vorpal
   .command('show table','shows the machine\'s trace table')
   .option('-f, --from <line>','the line number from which to print the table')
   .option('-t, --to <line>','the line upto which to print the table')
-  .action(function(args,callback){
-    let fromLine = args.options.from || 0;
-    let sliceOptions = [fromLine];
-    if(args.options.to) sliceOptions.push(args.options.to);
-    let table = m.getTable();
-    let slicedTable = Array.prototype.slice.apply(table,sliceOptions);
-    printTable(slicedTable);
-    callback();
-  });
+  .action(machineActions.showTable.bind(machineActions));
 
-  vorpal
+vorpal
   .command('show print','shows the machine\'s print output')
-  .action(function(args,callback){
-    let prn = m.getPrn();
-    printOutput(prn);
-    callback();
-  });
+  .action(machineActions.showOutput.bind(machineActions));
 
 vorpal
   .command('show stack','shows the machine\'s stack')
   .allowUnknownOptions()
-  .action(function(args,callback){
-    let stack = m.getStack();
-    printStack(stack);
-    callback();
-  });
+  .action(machineActions.showStack.bind(machineActions))
 
 vorpal
   .command('show program','shows the program loaded into the machine')
   .allowUnknownOptions()
-  .action(function(args,callback){
-    vorpal.log(program);
-    callback();
-  });
+  .action(machineActions.showProgram.bind(machineActions));
 
 
 vorpal.log(intro);
